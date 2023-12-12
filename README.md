@@ -6,7 +6,7 @@ The whole course contained 4 main modules with multiple sprints:
    - Structured Approach to Data Analytics (Google Sheets)
    - Utilising Spreadsheets for Data Analytics (Google Sheets)
    - SQL and Databases (BigQuery)
-   - Advanced SQL and Databases
+   - Advanced SQL and Databases (BigQuery)
 
 2. Communicating Analysis Results: Tableau
    - Visualising Data Using Tableau
