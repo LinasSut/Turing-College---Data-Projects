@@ -6,7 +6,7 @@ You are asked to provide 1 dashboard or spreadsheet which you will then use for 
 
 Keep in mind that both presentations and spreadsheet /dashboard should be prepared with your audience in mind. Make sure that you apply what you learned in this sprint and that you can provide not only data but also insights and communicate them.
 
-#### For the analysis the data about orders, products, salespersons, teritories were extracted using code below
+For the analysis the data about orders, products, salespersons, teritories were extracted using code below
 
 ```
 -- Gathering sales order data each orders order line table and creating online/offline column			
