@@ -11,7 +11,7 @@
         AND Quantity > 0																								
         AND unitprice > 0																								
         AND CustomerID IS NOT NULL																								
-    GROUP BY CustomerID																								
+   	 GROUP BY CustomerID																								
 	),																								
 																									
 	-- Calculating Recency for the analysis																																														
