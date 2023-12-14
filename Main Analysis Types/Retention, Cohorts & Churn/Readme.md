@@ -8,3 +8,14 @@ You remember learning previously that cohorts analysis can be really helpful in 
 
 You should use turing_data_analytics.subscriptions table to answer this question. Please write a SQL that would extract data from the BigQuery, make a visualisation using Google spreadsheets and briefly comment your findings.
 
+## Results, Conclusions and Insights
+
+- Examining the cohort reveals that individuals who initiated their subscription in November are more prone to unsubscribe from our services during the second week.
+
+- Upon reviewing December data, individuals who opted to subscribe to our services during that period demonstrate lower unsubscribing rates over a 6-week period. This may imply that a more motivated customer group was targeted during that specific timeframe. 
+These findings should be juxtaposed with the marketing instruments employed to assess the effectiveness of efforts in retaining more customers.
+
+- In the final week of January 2021, we experienced the lowest number of customer subscriptions to our services.
+
+<img width="821" alt="Retention Cohorts" src="https://github.com/LinasSut/Turing-College-Data-Projects/assets/92430287/05d23c0a-5c9b-4001-b43b-822453398c05">
+
