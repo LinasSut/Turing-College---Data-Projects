@@ -8,7 +8,7 @@ You remember learning previously that cohorts analysis can be really helpful in 
 
 You should use turing_data_analytics.subscriptions table to answer this question. Please write a SQL that would extract data from the BigQuery, make a visualisation using Google spreadsheets and briefly comment your findings.
 
-## Results, Conclusions and Insights
+## Results, Conclusions and Insights 
 
 - Examining the cohort reveals that individuals who initiated their subscription in November are more prone to unsubscribe from our services during the second week.
 
