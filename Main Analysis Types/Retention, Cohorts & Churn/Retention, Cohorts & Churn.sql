@@ -18,5 +18,5 @@ SELECT
   SUM (CASE WHEN (DATE_ADD(start_week, INTERVAL 5 week)) < last_week OR last_week IS NULL THEN 1 ELSE 0 END) AS week_5,
   SUM (CASE WHEN (DATE_ADD(start_week, INTERVAL 6 week)) < last_week OR last_week IS NULL THEN 1 ELSE 0 END) AS week_6
 FROM sub_dates
-GROUP BY 1
-ORDER BY 1
+GROUP BY start_week
+ORDER BY start_week
