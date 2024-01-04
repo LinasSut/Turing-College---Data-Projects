@@ -1,0 +1,109 @@
+WITH FM_table as (
+  SELECT 
+  sellers.seller_id,
+  MAX(DATE_TRUNC(order_purchase_timestamp,day)) AS last_purchase_date,
+  COUNT(DISTINCT orders.order_id) AS frequency,
+  ROUND(SUM(price + freight_value),2) AS monetary
+  FROM `olist_db.olist_sellers_dataset` AS sellers
+  JOIN `olist_db.olist_order_items_dataset` as order_item
+  ON sellers.seller_id = order_item.seller_id
+  JOIN `olist_db.olist_orders_dataset` as orders
+  ON order_item.order_id = orders.order_id
+  GROUP BY sellers.seller_id
+),
+
+R_table AS (
+  SELECT
+  seller_id,
+  frequency,
+  monetary,
+  DATE_DIFF(reference_date, last_purchase_date, DAY) as recency
+FROM 
+  (SELECT
+    *,
+    MAX(last_purchase_date) OVER () AS reference_date,
+  FROM FM_table)
+),
+quantiles AS (
+  SELECT R_table.*,
+  -- All Recency quntiles
+    R_percentiles.percentiles[offset(25)] AS r25,
+    R_percentiles.percentiles[offset(50)] AS r50,
+    R_percentiles.percentiles[offset(75)] AS r75,
+    R_percentiles.percentiles[offset(100)] AS r100,
+  -- all Frequency Quintiles
+    F_percentiles.percentiles[offset(25)] AS f25,
+    F_percentiles.percentiles[offset(50)] AS f50,
+    F_percentiles.percentiles[offset(75)] AS f75,
+    F_percentiles.percentiles[offset(100)] AS f100,
+  -- All Monetary Quitiles
+    M_percentiles.percentiles[offset(25)] AS m25,
+    M_percentiles.percentiles[offset(50)] AS m50,
+    M_percentiles.percentiles[offset(75)] AS m75,
+    M_percentiles.percentiles[offset(100)] AS m100
+  FROM R_table,
+  (SELECT approx_quantiles(recency, 100) AS percentiles FROM R_table) as R_percentiles,
+  (SELECT approx_quantiles(frequency, 100) AS percentiles FROM R_table) as F_percentiles,
+  (SELECT approx_quantiles(monetary, 100) AS percentiles FROM R_table) as M_percentiles
+),
+
+scores_assigned AS (
+  SELECT
+    *,
+    CAST(ROUND((f_score + m_score) / 2, 0) AS INT64) as fm_score
+  FROM 
+    ( SELECT *,
+      CASE 
+        WHEN monetary <= m25 THEN 1
+        WHEN monetary <= m50 AND monetary > m25 THEN 2
+        WHEN monetary <= m75 AND monetary > m50 THEN 3
+        WHEN monetary <= m100 AND monetary > m75 THEN 4
+      END AS m_score,
+      CASE 
+        WHEN frequency <= f25 THEN 1
+        WHEN frequency <= f50 AND frequency > f25 THEN 2
+        WHEN frequency <= f75 AND frequency > f50 THEN 3
+        WHEN frequency <= f100 AND frequency > f75 THEN 4
+      END AS f_score,
+      CASE 
+        WHEN recency <= r25 THEN 4
+        WHEN recency <= r50 AND recency > r25 THEN 3
+        WHEN recency <= r75 AND recency > r50 THEN 2
+        WHEN recency <= r100 AND recency > r75 THEN 1
+      END AS r_score,
+      FROM quantiles
+    )
+),
+
+sellers_segments AS(
+SELECT 
+        seller_id,
+        CASE WHEN
+          (r_score = 4 AND fm_score = 4) 
+        THEN 'Top sellers'
+         WHEN (r_score = 4 AND fm_score = 3) 
+            OR (r_score = 3 AND fm_score = 4)
+            OR (r_score = 3 AND fm_score = 3)
+        THEN 'Potential Top Sellers'
+        WHEN (r_score = 4 AND fm_score = 2)
+            OR (r_score = 3 AND fm_score = 2) 
+            OR (r_score = 2 AND fm_score = 3)
+            OR (r_score = 2 AND fm_score = 2)
+        THEN 'Needing Attention'
+        WHEN (r_score = 1 AND fm_score = 4)
+          OR (r_score = 1 AND fm_score = 3)
+          OR (r_score = 2 AND fm_score = 4)
+        THEN 'At Risk'
+        WHEN (r_score = 4 AND fm_score = 1) 
+            OR (r_score = 3 AND fm_score = 1)
+        THEN 'Promising'
+        WHEN (r_score = 1 AND fm_score = 1) 
+          OR (r_score = 1 AND fm_score = 2)
+          OR (r_score = 2 AND fm_score = 1)
+        THEN 'Novice sellers'
+        END AS sellers_segment 
+    FROM scores_assigned
+)
+
+SELECT *
+FROM sellers_segments
