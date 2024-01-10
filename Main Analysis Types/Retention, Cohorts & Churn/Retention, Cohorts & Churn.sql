@@ -1,10 +1,9 @@
 WITH sub_dates AS (
   SELECT
     user_pseudo_id,
-    MIN(DATE_TRUNC(subscription_start,week)) as start_week,
-    MAX((DATE_TRUNC(subscription_end,week))) as last_week
+    DATE_TRUNC(subscription_start,week) as start_week,
+    DATE_TRUNC(subscription_end,week) as last_week
   FROM `turing_data_analytics.subscriptions`
-  GROUP BY user_pseudo_id
 )
 
 SELECT
