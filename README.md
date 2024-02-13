@@ -22,6 +22,11 @@ The whole course contained 4 main modules with multiple sprints:
    - Product Analyst
    - Marketing Analyst
    - Payments/Monetization Analyst
+  
+5. Capstone Project
+
+   The main final project was made for  "Market Insights for E-commerce Company in 2019".
+   The Capstone project with all queries, dashboard, reports and presentation can be found here
 
 
 
